@@ -16,17 +16,6 @@ class RedNeuronal:
             self.activacion = tanh
             self.activacion_prime = tanh_derivada
  
-        #Se inicializan los pesos
-        self.pesos = []
-        self.deltas = []
-        #Se asignan los valores aleatorios a las capas
-        for i in range(1, len(capas) - 1):
-            rand = 2*np.random.random((capas[i-1] + 1, capas[i] + 1)) -1
-            self.pesos.append(rand)
-            
-        rand = 2*np.random.random( (capas[i] + 1, capas[i+1])) - 1
-        self.pesos.append(rand)
- 
     def predict(self, x): 
         act = np.concatenate((np.ones(1).T, np.array(x)), axis=0)
         for l in range(0, len(self.pesos)):
@@ -42,7 +31,17 @@ class RedNeuronal:
     def obtener_deltas(self):
         return self.deltas
 
-    def entrenar(self, x, y, jP, kP,tasa_aprendizaje=0.2, epocas=100000):
+    def entrenar(self, x, y, jP, kP,capas,tasa_aprendizaje=0.2, epocas=100000):
+        #Se inicializan los pesos
+        self.pesos = []
+        self.deltas = []
+        #Se asignan los valores aleatorios a las capas
+        for i in range(1, len(capas) - 1):
+            rand = 2*np.random.random((capas[i-1] + 1, capas[i] + 1)) -1
+            self.pesos.append(rand)
+            
+        rand = 2*np.random.random( (capas[i] + 1, capas[i+1])) - 1
+        self.pesos.append(rand)
         #Se agrega la columna de bias a las entradas X
         ones = np.atleast_2d(np.ones(x.shape[0]))
         onesjP = np.atleast_2d(np.ones(jP.shape[0]))
@@ -50,7 +49,7 @@ class RedNeuronal:
         x = np.concatenate((ones.T, x), axis=1)
         jP = np.concatenate((onesjP.T, jP), axis=1)
         errorTotal = 1
-        while (errorTotal > 0.0001):
+        while (errorTotal > 0.00001):
             for w in range(epocas):
                 #Se obtiene de forma aleatoria uno de los registros de entrada
                 i = np.random.randint(x.shape[0])
@@ -96,7 +95,7 @@ class RedNeuronal:
             print("Error MSEp: ",secSumError)
             errorTotal = ((34*sumError)+(17*secSumError))/51
             print("Error MSEt: ",errorTotal)
-        print("No cumplio :(")
+        print("Termina una K")
 
 
 
@@ -115,13 +114,41 @@ conjuntoK1 = np.array([
     [3.0],[3.1],[3.2],[3.3]
 ])
 
+conjuntoK2 = np.array([
+    [1.7],[1.8],[1.9],[2.0],[2.1],[2.2],[2.3],[2.4],[2.5],[2.6],
+    [2.7],[2.8],[2.9],[3.0],[3.1],[3.2],[3.3],[3.4],[3.5],[3.6],
+    [3.7],[3.8],[3.9],[4.0],[4.1],[4.2],[4.3],[4.4],[4.5],[4.6],
+    [4.7],[4.8],[4.9],[5.0]
+])
+
+conjuntoK3 = np.array([
+    [0.0],[0.1],[0.2],[0.3],[0.4],[0.5],[0.6],[0.7],[0.8],[0.9],
+    [1.0],[1.1],[1.2],[1.3],[1.4],[1.5],[1.6],[3.4],[3.5],[3.6],
+    [3.7],[3.8],[3.9],[4.0],[4.1],[4.2],[4.3],[4.4],[4.5],[4.6],
+    [4.7],[4.8],[4.9],[5.0]
+])
+
 conjuntoPruebaK1 = np.array([
     [3.4],[3.5],[3.6],[3.7],[3.8],[3.9],[4.0],[4.1],[4.2],[4.3],
     [4.4],[4.5],[4.6],[4.7],[4.8],[4.9],[5.0]
 ])
 
+conjuntoPruebaK2 = np.array([
+    [0.0],[0.1],[0.2],[0.3],[0.4],[0.5],[0.6],[0.7],[0.8],[0.9],
+    [1.0],[1.1],[1.2],[1.3],[1.4],[1.5],[1.6]
+])
+
+conjuntoPruebaK3 = np.array([
+    [1.7],[1.8],[1.9],[2.0],[2.1],[2.2],[2.3],[2.4],[2.5],[2.6],
+    [2.7],[2.8],[2.9],[3.0],[3.1],[3.2],[3.3]
+])
+
 yK1 = np.zeros((34,1))
+yK2 = np.zeros((34,1))
+yK3 = np.zeros((34,1))
 yPK1 = np.zeros((17,1))
+yPK2 = np.zeros((17,1))
+yPK3 = np.zeros((17,1))
 
 for a in range(len(conjuntoK1)):
     yK1[a]= math.sin(conjuntoK1[a])
@@ -129,9 +156,23 @@ for a in range(len(conjuntoK1)):
 for a in range(len(conjuntoPruebaK1)):
     yPK1[a]= math.sin(conjuntoPruebaK1[a])
 
+for a in range(len(conjuntoK2)):
+    yK2[a]= math.sin(conjuntoK2[a])
+
+for a in range(len(conjuntoPruebaK2)):
+    yPK2[a]= math.sin(conjuntoPruebaK2[a])
+
+for a in range(len(conjuntoK3)):
+    yK3[a]= math.sin(conjuntoK3[a])
+
+for a in range(len(conjuntoPruebaK3)):
+    yPK3[a]= math.sin(conjuntoPruebaK3[a])
+
 
 RN = RedNeuronal([1,3,1],activacion ='tanh')
-RN.entrenar(conjuntoK1, yK1, conjuntoPruebaK1, yPK1,tasa_aprendizaje=0.03,epocas=10000)
+RN.entrenar(conjuntoK1, yK1, conjuntoPruebaK1, yPK1,[1,3,1],tasa_aprendizaje=0.03,epocas=10000)
+RN.entrenar(conjuntoK2, yK2, conjuntoPruebaK2, yPK2,[1,3,1],tasa_aprendizaje=0.03,epocas=10000)
+RN.entrenar(conjuntoK3, yK3, conjuntoPruebaK3, yPK3,[1,3,1],tasa_aprendizaje=0.03,epocas=10000)
  
 cont=0
 for resul in x:
